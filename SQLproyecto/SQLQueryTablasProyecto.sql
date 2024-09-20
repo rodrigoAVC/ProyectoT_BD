@@ -1,0 +1,92 @@
+use Project;
+
+-- Entidad Fuerte
+CREATE TABLE tiendas(
+	idT INT PRIMARY KEY IDENTITY(1,1),
+	nombre VARCHAR(30) NOT NULL,
+	horario VARCHAR(30) NOT NULL
+);
+
+-- Entidad Fuerte
+CREATE TABLE clientes(
+	idC INT PRIMARY KEY IDENTITY(1,1),
+	nombre VARCHAR(50) NOT NULL,
+	correo VARCHAR(50)
+);
+
+-- Entidad Fuerte
+CREATE TABLE facturas(
+	numero INT PRIMARY KEY IDENTITY(1,1),
+	idT INT NOT NULL,
+	idC INT NOT NULL,
+	fecha DATE NOT NULL,
+	subtotal FLOAT NOT NULL,
+	ISV VARCHAR(30) NOT NULL,
+	total FLOAT NOT NULL,
+	FOREIGN KEY(idT) REFERENCES tiendas(idT)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(idC) REFERENCES clientes(idC)
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Entidad Fuerte
+CREATE TABLE productos(
+	upc INT PRIMARY KEY IDENTITY(1,1),
+	numero INT NOT NULL,
+	nombre VARCHAR(50) NOT NULL,
+	tamanio FLOAT NOT NULL,
+	embalaje VARCHAR(40) NOT NULL,
+	marca VARCHAR(20) NOT NULL,
+	tipo VARCHAR(30) NOT NULL
+	FOREIGN KEY(numero) REFERENCES facturas
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Entidad Fuerte
+CREATE TABLE vendedores(
+	idV INT PRIMARY KEY IDENTITY(1,1),
+	nombre_vendedor VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE detalles_facturas(
+	numero INT PRIMARY KEY
+	FOREIGN KEY(numero) REFERENCES facturas
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE tiene(
+	idT INT NOT NULL,
+	upc INT NOT NULL,
+	precio float NOT NULL,
+	cantidad INT NOT NULL,
+	reordenar VARCHAR(30) NOT NULL,
+	PRIMARY KEY(idT,upc),
+	FOREIGN KEY (idT) REFERENCES tiendas,
+	FOREIGN KEY(upc) REFERENCES productos
+);
+
+CREATE TABLE vende(
+	idV INT NOT NULL,
+	upc INT NOT NULL,
+	PRIMARY KEY(idV,upc),
+	FOREIGN KEY(idV) REFERENCES vendedores
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(upc) REFERENCES productos
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE ubicaciones(
+	idT INT PRIMARY KEY,
+	ubicacion VARCHAR(100) NOT NULL
+	FOREIGN KEY(idT) REFERENCES tiendas
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE bitacora(
+	idBitacora INT PRIMARY KEY IDENTITY(1,1),
+	usuario VARCHAR(50),
+	tablaModificada VARCHAR(20),
+	operacion VARCHAR(20),
+	datoModificado VARCHAR(30),
+	fecha DATETIME DEFAULT GETDATE()
+);
